@@ -8,19 +8,31 @@ import { getLegacyGames } from "./src/legacy.js";
 const state = JSON.parse(fs.readFileSync("state.json"));
 
 async function run() {
-  const games = [
-    ...(await getEpicFreeGames()),
-    ...(await getSteamDeals()),
-    ...(await getGogDeals()),
-    ...getLegacyGames()
-  ];
+  await processGames(
+    await getEpicFreeGames(),
+    process.env.DISCORD_WEBHOOK_EPIC,
+    "Epic Games"
+  );
 
-  for (const game of games) {
-    if (state.sent.includes(game.id)) continue;
-    await sendToDiscord(`🎮 **${game.title}**\n🔗 ${game.url}`);
-    state.sent.push(game.id);
-  }
+  await processGames(
+    await getSteamDeals(),
+    process.env.DISCORD_WEBHOOK_STEAM,
+    "Steam"
+  );
+
+  await processGames(
+    await getGogDeals(),
+    process.env.DISCORD_WEBHOOK_GOG,
+    "GOG"
+  );
+
+  await processGames(
+    getLegacyGames(),
+    process.env.DISCORD_WEBHOOK_LEGACY,
+    "Legacy Games"
+  );
 
   fs.writeFileSync("state.json", JSON.stringify(state, null, 2));
 }
+
 run();
