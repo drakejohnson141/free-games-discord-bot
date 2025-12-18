@@ -6,8 +6,10 @@ import { getGogDeals } from "./src/gog.js";
 import { getLegacyGames } from "./src/legacy.js";
 
 const state = JSON.parse(fs.readFileSync("state.json"));
+await sendToDiscord("✅ Test message from GitHub Actions");
 
 async function run() {
+  await sendToDiscord("✅ Test message from GitHub Actions");
   const games = [
     ...(await getEpicFreeGames()),
     ...(await getSteamDeals()),
